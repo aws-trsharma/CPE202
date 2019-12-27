@@ -211,8 +211,6 @@ class HashTableLinear:
         for i in range(len(self.list)):
             if self.list[i] is not None:
                 count +=1
-        if count == 301:
-            count = 305
         return count
     def load_factor(self):
         """
@@ -228,174 +226,6 @@ class HashTableLinear:
             Number of collisions that have occured
         """
         return self.num_collisions
-
-class HashTableSepchain:
-    """
-        HashTable using seperate chaining and linked lists to solve collisions
-    """
-
-    def __init__(self, table_size=11):
-        """
-        Initialize the Hash Table
-        """
-        self.table_size = table_size
-        self.num_items = 0
-        self.list = []
-        self.collisons = 0
-        for i in range(table_size):
-            self.list.append([])
-    def __repr__(self):
-        """
-        :return:
-        Returns a string representation of the HashTable
-        """
-        return "%s" % self.list
-    def __eq__(self, other):
-        """
-        Determines if 2 HashTables are equivalent to each other
-        :param
-            other: (Hashtable): Hashtable object that must be compared
-        :return:
-            T or F depending on if they are equivalent to each other
-        """
-        return isinstance(other, HashTableSepchain) and self.table_size == other.table_size \
-            and self.list == other.list
-    def __getitem__(self, key):
-        """
-        Overrides the get function
-        """
-        return self.get(key)
-    def __contains__(self, key):
-        """
-        Overrides the [] operator in order to determine if it is contained
-        """
-        return self.contains(key)
-
-    def __setitem__(self, key, data):
-        """
-        Overrides the set item function
-        """
-        self.put(key, data)
-    def put(self, key, item):
-        """
-        Insert Function that takes a key and item
-        """
-        if self.load_factor() + 1 / self.table_size > 1.5:
-            self.rehash()
-        index = hash_string(key, self.table_size)
-        inner = self.list[index]
-        collidetrack = len(self.list[index])
-        if self.duplicate(key):
-            for i in range(len(self.list[index])):
-                if inner[i][0] == key:
-                    collidetrack = len(inner[:i + 1])
-                    while collidetrack > 0:
-                        collidetrack -= 1
-                    inner[i] = (key, item)
-        else:
-            while collidetrack > 0:
-                collidetrack -= 1
-            self.list[index].append((key, item))
-            self.num_items += 1
-
-    def rehash(self):
-        """
-        Rehases the Hash Table
-        to accomodate for size
-        """
-        oldhash = self.list
-        newhash = HashTableSepchain(self.table_size * 2 + 1)
-        self.table_size = newhash.table_size
-        self.num_items = 0
-        self.list = []
-        for i in range(self.table_size):
-            self.list.append([])
-        for index0 in range(len(oldhash)):
-            for index1 in (oldhash)[index0]:
-                index = hash_string(index1[0] , self.table_size)
-                self.list[index].append((index1[0], index1[1]))
-                self.num_items += 1
-
-    def duplicate(self, key):
-        """
-        Helper Function
-        Checks for Duplicates
-        """
-        index = hash_string(key, self.table_size)
-        i = 0
-        hashsize = len(self.list[index])
-        searchlist = self.list[index]
-        while i < hashsize:
-            if (searchlist[i])[0] == key:
-                return True
-            i += 1
-        return False
-
-    def get(self, key):
-        """
-        Uses given key to find and return the item, key pair
-        """
-        index = hash_string(key, self.table_size)
-        i = 0
-        hashsize = len(self.list[index])
-        searchlist = self.list[index]
-        while i < hashsize:
-            if (searchlist[i])[0] == key:
-                return searchlist[i][1]
-            i += 1
-        raise LookupError
-
-    def contains(self, key):
-        """
-        Returns True if key exists in the table or False
-        :param
-            key: the key that must be looked up
-        """
-
-        index = hash_string(key, self.table_size)
-        i = 0
-        hashsize = len(self.list[index])
-        searchlist = self.list[index]
-        while i < hashsize:
-            if (searchlist[i])[0] == key:
-                return True
-            i += 1
-        return False
-
-    def remove(self, key):
-        """
-        Removes item, key pair and returns it
-        """
-        index = hash_string(key, self.table_size)
-        i = 0
-        hashsize = len(self.list[index])
-        searchlist = self.list[index]
-        while i < hashsize:
-            if (searchlist[i])[0] == key:
-                temp = searchlist[i]
-                del searchlist[i]
-                self.num_items -= 1
-                return temp
-            i += 1
-        raise LookupError
-
-    def size(self):
-        """
-        Returns number of pairs in the Hash Table
-        """
-        return self.num_items
-
-    def load_factor(self):
-        """
-        Returns current load factor
-        """
-        return self.num_items / self.table_size
-
-    def collisions(self):
-        """
-        Returns number of collisions during insertions
-        """
-        return self.collisons
 
 class HashTableQuadratic:
     """
@@ -585,13 +415,10 @@ class HashTableQuadratic:
         return:
             The number of items in the array
         """
-        r = 292
         count = 0
         for i in range(len(self.list)):
             if self.list[i] is not None:
                 count += 1
-        if count == r:
-            count += 13
         return count
 
     def load_factor(self):
